@@ -1,20 +1,26 @@
 {
-	"World" : {
-		"sampleCount": true,
-		"sampleArray": [
-								[1.f,2.f,3.f,4.f,5.f,6.f,7.f,8.f],
-								[11,12,13,14,15,16,17,18]
-							],
-		"sampleLast": null,
-
-	},	
-	"DxWindow": {
-		"screenWidth": +1280,
-		"screenHeight": -720.0f,
-		"title": "KDW-2D",
-		"World22": {
-			"tileCount": 1
-		}
+	"firstName": "John",
+	"lastName": "Smith",
+	"isAlive": true,
+	"age": 25,
+	"height_cm": 167.6,
+	"address": {
+		"streetAddress": "21 2nd Street",
+		"city": "New York",
+		"state": "NY",
+		"postalCode": "10021-3100"
 	},
-
+	"phoneNumbers": [
+		{
+			"type": "home",
+			"number": "212 555-1234",
+		},
+		{
+			"type": "office",
+			"number": "646 555-4567",
+		}
+	],
+	"children": [],
+	"spouse": null
 }
+

@@ -1,4 +1,4 @@
-#include "JsonFile.h"
+#include "JsonFileBase.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -6,9 +6,6 @@
 
 namespace dw1
 {
-	JsonFile* running_parser = nullptr;
-
-
 
 	int token_copy_int(char* src, int cnt)
 	{
@@ -353,7 +350,7 @@ namespace dw1
 			break;
 		case jsonToken::Number: printf("%d ,\n", value_i);
 			break;
-		case jsonToken::Float: printf("%.f ,\n", value_f);
+		case jsonToken::Float: printf("%f ,\n", value_f);
 			break;
 		case jsonToken::Null: printf("null ,\n");
 			break;
@@ -384,19 +381,19 @@ namespace dw1
 		jsonValue::Print1(level);
 	}
 
-	JsonFile::JsonFile()
+	JsonFileBase::JsonFileBase()
 	{ 
 		mRoot = nullptr; 
 		mFileData = nullptr;
 	}
 
-	JsonFile::~JsonFile()
+	JsonFileBase::~JsonFileBase()
 	{
 		if (mRoot) delete mRoot;
 		if (mFileData) ::free( mFileData );
 	}
 
-	int JsonFile::Load(const char* file_name)
+	int JsonFileBase::Load(const char* file_name)
 	{
 		FILE* f = nullptr;
 		fopen_s(&f, file_name, "rb");
@@ -418,7 +415,7 @@ namespace dw1
 		return mFileSize;
 	}
 
-	bool JsonFile::PopToken(jsonToken& t)
+	bool JsonFileBase::PopToken(jsonToken& t)
 	{
 		if (mPtr.getToken(t)) {
 			if (t.type == jsonToken::WhiteSpace) return mPtr.getToken(t);
@@ -427,328 +424,6 @@ namespace dw1
 
 		return false;
 	}
-
-	bool JsonFile::process_Brace0()
-	{
-		if (mTokens.size() < 1) return false;
-
-		int idx = mTokens.size() - 1;
-		if (mTokens[idx].type == jsonToken::Brace0)
-		{
-			jsonObject* obj = new jsonObject;
-			mTokens[idx].val_obj = obj;
-			return true;
-		}
-
-		return false;
-	}
-
-	bool JsonFile::process_Bracket0()
-	{
-		if (mTokens.size() < 1) return false;
-
-		int idx = mTokens.size() - 1;
-		if (mTokens[idx].type == jsonToken::Bracket0)
-		{
-			jsonArray* arr = new jsonArray;
-			mTokens[idx].val_array = arr;
-			return true;
-		}
-
-		return false;
-	}
-
-	bool JsonFile::process_KeyValue()
-	{
-		if (mTokens.size() < 3) return false;
-
-		int idx = mTokens.size() - 1;
-		if (mTokens[idx].type < jsonToken::isValue &&
-			mTokens[idx - 1].type == jsonToken::Colon &&
-			mTokens[idx - 2].type == jsonToken::String)
-		{
-			jsonKeyValue* kv = new jsonKeyValue;
-			kv->setKey(mTokens[idx - 2]);
-			kv->setValue(mTokens[idx]);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-			mTokens.pop_back();
-
-			jsonToken re;
-			re.type = jsonToken::KeyValue;
-			re.val_kv = kv;
-			mTokens.push_back(re);
-
-			return true;
-		}
-
-		if (mTokens[idx].type == jsonToken::Object &&
-			mTokens[idx - 1].type == jsonToken::Colon &&
-			mTokens[idx - 2].type == jsonToken::String)
-		{
-			jsonKeyValue* kv = new jsonKeyValue;
-			kv->setKey(mTokens[idx - 2]);
-			kv->setValue(mTokens[idx]);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-			mTokens.pop_back();
-
-			jsonToken re;
-			re.type = jsonToken::KeyValue;
-			re.val_kv = kv;
-			mTokens.push_back(re);
-
-			return true;
-		}
-
-
-
-		if (mTokens[idx].type == jsonToken::Array &&
-			mTokens[idx - 1].type == jsonToken::Colon &&
-			mTokens[idx - 2].type == jsonToken::String)
-		{
-			jsonKeyValue* kv = new jsonKeyValue;
-			kv->setKey(mTokens[idx - 2]);
-			kv->setValue(mTokens[idx]);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-			mTokens.pop_back();
-
-			jsonToken re;
-			re.type = jsonToken::KeyValue;
-			re.val_kv = kv;
-			mTokens.push_back(re);
-
-			return true;
-		}
-
-
-		return false;
-	}
-
-	bool JsonFile::Bracket0_Value()
-	{
-		int idx = mTokens.size() - 1;
-
-		/* Array는 경우의 수가 많다. 하지만 코드는 동일하다.
-		//  [ 값,
-		//  [ Array,
-		//  [ Object,
-		//
-		//  mTokens[idx] 에는 , 혹은 ] 이 들어 있다.
-		//
-		*/
-		bool isDo = false;
-		if (mTokens[idx - 1].type < jsonToken::isValue &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			isDo = true;
-		}
-
-		if (mTokens[idx - 1].type == jsonToken::Array &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			isDo = true;
-		}
-
-
-		if (mTokens[idx - 1].type == jsonToken::Object &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			isDo = true;
-		}
-
-		if( isDo )
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
-
-			mTokens.pop_back();  // Comma 혹은 ] 를 제거 한다.
-			mTokens.pop_back();   // 데이타도 제거한다.
-		}
-
-		return isDo;
-	}
-
-
-	bool JsonFile::Brace0_Value()
-	{
-		int idx = mTokens.size() - 1;
-
-		// Brace0 다음은 KeyValue 만 가능하다....
-		// { 키밸류,
-		//
-		//  mTokens[idx] 에는 , 혹은 } 이 들어 있다.
-		//
-		if (mTokens[idx - 1].type == jsonToken::KeyValue &&
-			mTokens[idx - 2].type == jsonToken::Brace0)
-		{
-			jsonKeyValue* kv = mTokens[idx - 1].val_kv;
-			jsonObject* obj = mTokens[idx - 2].val_obj;
-			obj->mKeyValueList.push_back(*kv);
-			delete kv;
-
-			mTokens.pop_back();   // , } 제거
-			mTokens.pop_back();   // value 제거
-
-			return true;
-		}
-		else
-			return false;
-	}
-
-
-
-	bool JsonFile::process_Comma()
-	{
-		int idx = mTokens.size() - 1;
-		if (mTokens[idx].type != jsonToken::Comma) return false;
-
-
-		if (mTokens.size() < 2) return false;
-		//  빈거일때.....
-		// { ,
-		// [ ,
-		//		
-		if ( // mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::Brace0)
-		{
-			mTokens.pop_back();
-			return true;
-		}
-		if ( // mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::Bracket0)
-		{
-			mTokens.pop_back();
-			return true;
-		}
-		
-		if (mTokens.size() < 3) return false;
-		//{ Key:Value,
-		//
-		if ( // mTokens[idx].type == jsonToken::Comma &&
-			Brace0_Value()) return true;
-
-		//  [ 값,
-		//  [ Array,
-		//  [ Object,
-		//
-		if( // mTokens[idx].type == jsonToken::Comma &&
-			Bracket0_Value() ) return true;
-
-
-		return false;
-	}
-
-	bool JsonFile::process_Bracket1()
-	{
-		int idx = mTokens.size() - 1;
-		if (mTokens[idx].type != jsonToken::Bracket1) return false;
-
-
-
-		if (mTokens.size() < 2) return false;
-		//  [ ]
-		//
-		if ( // mTokens[idx].type == jsonToken::Bracket1 &&
-			 mTokens[idx - 1].type == jsonToken::Bracket0)
-		{
-			mTokens[idx - 1].type = jsonToken::Array;
-
-			mTokens.pop_back();  // jsonToken::Bracket1 날림
-			return true;
-		}
-
-		if (mTokens.size() < 3) return false;
-		//  [ 값 ]
-		//  [ Array ]
-		//  [ Object ]
-		//
-		if ( // mTokens[idx].type == jsonToken::Bracket1 &&
-			Bracket0_Value()) {
-			// Bracket0 을 Array로 바꿔준다.
-			mTokens[idx - 2].type = jsonToken::Array;
-			return true;
-		}
-
-		return false;
-	}
-
-	bool JsonFile::process_Brace1()
-	{
-		int idx = mTokens.size() - 1;
-		if (mTokens[idx].type != jsonToken::Brace1) return false;
-
-
-		if (mTokens.size() < 2) return false;
-		// 빈거.
-		// { }
-		//
-		if (// mTokens[idx].type == jsonToken::Brace1 &&
-			mTokens[idx - 1].type == jsonToken::Brace0)
-		{
-			mTokens[idx - 1].type = jsonToken::Object;
-
-			mTokens.pop_back();
-			return true;
-		}
-
-		if (mTokens.size() < 3) return false;
-		//{ Key:Value }
-		//
-		if ( // mTokens[idx].type == jsonToken::Brace1 && 
-			Brace0_Value()) {
-			mTokens[idx - 2].type = jsonToken::Object;
-			return true;
-
-		}
-
-		return false;
-	}
-
-	void JsonFile::Parse(const char* file_name)
-	{
-		if (!Load(file_name)) return;
-
-		running_parser = this;
-
-		bool bLoop = true;
-
-		while (bLoop)
-		{
-			jsonToken t0;
-			if (!PopToken(t0))
-				return;
-			mTokens.push_back(t0);
-
-			if (process_Brace0()) continue;
-			if (process_Bracket0()) continue;
-			if (process_Comma()) continue;
-
-			process_Bracket1();
-			process_Brace1();
-			
-			int cnt = 0;
-			while (process_KeyValue()) {
-				++cnt;
-				break;
-			}
-			// Object 하나만 남아 있으면...
-			if (mTokens.size() == 1 &&
-				mTokens[0].type == jsonToken::Object)
-			{
-				mRoot = mTokens[0].val_obj;
-				bLoop = false;
-			}
-
-		}
-	}
-
-
 
 
 

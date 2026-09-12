@@ -21,7 +21,13 @@
     <ClCompile Include="JsonTest.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="json\JsonFile.cpp">
+    <ClCompile Include="json\JsonFile1.cpp">
+      <Filter>JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="json\JsonFile2.cpp">
+      <Filter>JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="json\JsonFileBase.cpp">
       <Filter>JSON</Filter>
     </ClCompile>
   </ItemGroup>
@@ -31,7 +37,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="json\JsonFile.h">
+    <ClInclude Include="json\JsonFile1.h">
+      <Filter>JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="json\JsonFile2.h">
+      <Filter>JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="json\JsonFileBase.h">
       <Filter>JSON</Filter>
     </ClInclude>
   </ItemGroup>

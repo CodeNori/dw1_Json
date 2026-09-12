@@ -124,13 +124,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="JsonTest.cpp" />
-    <ClCompile Include="json\JsonFile.cpp" />
+    <ClCompile Include="json\JsonFile1.cpp" />
+    <ClCompile Include="json\JsonFile2.cpp" />
+    <ClCompile Include="json\JsonFileBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Game.json" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="json\JsonFile.h" />
+    <ClInclude Include="json\JsonFile1.h" />
+    <ClInclude Include="json\JsonFile2.h" />
+    <ClInclude Include="json\JsonFileBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

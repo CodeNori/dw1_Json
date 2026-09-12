@@ -17,6 +17,9 @@ namespace dw1
 			Float,
 			String,
 
+			Array,
+			Object,
+
 			isValue,
 
 			WhiteSpace,
@@ -27,8 +30,6 @@ namespace dw1
 			Bracket0,
 			Bracket1,
 
-			Array,
-			Object,
 			KeyValue
 		};
 		Type type;
@@ -109,8 +110,10 @@ namespace dw1
 		void Print(int level);
 	};
 
-	class JsonFile
+
+	class JsonFileBase
 	{
+	protected:
 		char* mFileData = nullptr;
 		int mFileSize = 0;
 
@@ -122,23 +125,52 @@ namespace dw1
 		int Load(const char* file_name);
 		bool PopToken(jsonToken& t);
 
-		bool process_Brace0();
-		bool process_Bracket0();
-		bool process_KeyValue();
-		bool process_Comma();
-		bool process_Bracket1();
-		bool process_Brace1();
-
-		bool Bracket0_Value();
-		bool Brace0_Value();
 	public:
-		JsonFile();
-		~JsonFile();
+		JsonFileBase();
+		~JsonFileBase();
 
-		void Parse(const char* file_name);
 		void Print() { mRoot->Print(1); }
 		jsonKeyValue* Find(const char* name) { return mRoot->Find(name); }
 	};
+
+
+	class JsonFile1 : public JsonFileBase
+	{
+		bool process_Brace0();
+		bool process_Bracket0();
+		bool process_KeyValue();
+		bool process_Blank_Comma();
+		bool process_Brace0_KeyValue_Comma();
+		bool process_Bracket0_Value_Comma();
+
+		bool process_Blank_Bracket1();
+		bool process_Blank_Brace1();
+		bool process_Brace0_KeyValue_Brace1();
+		bool process_Bracket0_Value_Bracket1();
+
+		bool Bracket0_Value_T0();
+		bool Brace0_KeyValue_T0();
+
+	public:
+
+		void Parse(const char* file_name);
+	};
+
+
+
+	class JsonFile2 : public JsonFileBase
+	{
+		bool stmt_Object();
+		bool stmt_Value();
+		bool stmt_Array();
+
+		void make_KeyValue();
+
+	public:
+
+		bool Parse(const char* file_name);
+	};
+
 
 }
 
