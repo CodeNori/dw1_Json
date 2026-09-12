@@ -428,7 +428,7 @@ namespace dw1
 		return false;
 	}
 
-	bool JsonFile::processExpr_Brace0()
+	bool JsonFile::process_Brace0()
 	{
 		if (mTokens.size() < 1) return false;
 
@@ -443,7 +443,7 @@ namespace dw1
 		return false;
 	}
 
-	bool JsonFile::processExpr_Bracket0()
+	bool JsonFile::process_Bracket0()
 	{
 		if (mTokens.size() < 1) return false;
 
@@ -458,7 +458,7 @@ namespace dw1
 		return false;
 	}
 
-	bool JsonFile::processExpr_KeyValue()
+	bool JsonFile::process_KeyValue()
 	{
 		if (mTokens.size() < 3) return false;
 
@@ -529,38 +529,62 @@ namespace dw1
 		return false;
 	}
 
-	bool JsonFile::processExpr_Comma()
+	bool JsonFile::Bracket0_Value()
 	{
-		if (mTokens.size() < 2) return false;
-
 		int idx = mTokens.size() - 1;
 
-		//  빈거일때.....
-		// { ,
-		// [ ,
+		/* Array는 경우의 수가 많다. 하지만 코드는 동일하다.
+		//  [ 값,
+		//  [ Array,
+		//  [ Object,
 		//
-		
-		if (mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::Brace0)
+		//  mTokens[idx] 에는 , 혹은 ] 이 들어 있다.
+		//
+		*/
+		bool isDo = false;
+		if (mTokens[idx - 1].type < jsonToken::isValue &&
+			mTokens[idx - 2].type == jsonToken::Bracket0)
 		{
-			mTokens.pop_back();
-			return true;
+			isDo = true;
 		}
-		if (mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::Bracket0)
-		{
-			mTokens.pop_back();
-			return true;
-		}
-		
 
-		if (mTokens.size() < 3) return false;
+		if (mTokens[idx - 1].type == jsonToken::Array &&
+			mTokens[idx - 2].type == jsonToken::Bracket0)
+		{
+			isDo = true;
+		}
+
+
+		if (mTokens[idx - 1].type == jsonToken::Object &&
+			mTokens[idx - 2].type == jsonToken::Bracket0)
+		{
+			isDo = true;
+		}
+
+		if( isDo )
+		{
+			jsonValue val;
+			val.setValue(mTokens[idx - 1]);
+			mTokens[idx - 2].val_array->mValueList.push_back(val);
+
+			mTokens.pop_back();  // Comma 혹은 ] 를 제거 한다.
+			mTokens.pop_back();   // 데이타도 제거한다.
+		}
+
+		return isDo;
+	}
+
+
+	bool JsonFile::Brace0_Value()
+	{
+		int idx = mTokens.size() - 1;
 
 		// Brace0 다음은 KeyValue 만 가능하다....
 		// { 키밸류,
-		// 
-		if (mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::KeyValue &&
+		//
+		//  mTokens[idx] 에는 , 혹은 } 이 들어 있다.
+		//
+		if (mTokens[idx - 1].type == jsonToken::KeyValue &&
 			mTokens[idx - 2].type == jsonToken::Brace0)
 		{
 			jsonKeyValue* kv = mTokens[idx - 1].val_kv;
@@ -568,144 +592,103 @@ namespace dw1
 			obj->mKeyValueList.push_back(*kv);
 			delete kv;
 
-			mTokens.pop_back();
-			mTokens.pop_back();
+			mTokens.pop_back();   // , } 제거
+			mTokens.pop_back();   // value 제거
 
 			return true;
 		}
+		else
+			return false;
+	}
 
 
-		// Array는 경우의 수가 많다.
+
+	bool JsonFile::process_Comma()
+	{
+		int idx = mTokens.size() - 1;
+		if (mTokens[idx].type != jsonToken::Comma) return false;
+
+
+		if (mTokens.size() < 2) return false;
+		//  빈거일때.....
+		// { ,
+		// [ ,
+		//		
+		if ( // mTokens[idx].type == jsonToken::Comma &&
+			mTokens[idx - 1].type == jsonToken::Brace0)
+		{
+			mTokens.pop_back();
+			return true;
+		}
+		if ( // mTokens[idx].type == jsonToken::Comma &&
+			mTokens[idx - 1].type == jsonToken::Bracket0)
+		{
+			mTokens.pop_back();
+			return true;
+		}
+		
+		if (mTokens.size() < 3) return false;
+		//{ Key:Value,
+		//
+		if ( // mTokens[idx].type == jsonToken::Comma &&
+			Brace0_Value()) return true;
+
 		//  [ 값,
 		//  [ Array,
 		//  [ Object,
 		//
-		if (mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type < jsonToken::isValue &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
+		if( // mTokens[idx].type == jsonToken::Comma &&
+			Bracket0_Value() ) return true;
 
-			mTokens.pop_back();
-			mTokens.pop_back();
-
-			return true;
-		}
-
-		if (mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::Array &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-
-			return true;
-		}
-
-
-		if (mTokens[idx].type == jsonToken::Comma &&
-			mTokens[idx - 1].type == jsonToken::Object &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-
-			return true;
-		}
 
 		return false;
 	}
 
-	bool JsonFile::processExpr_Bracket1()
+	bool JsonFile::process_Bracket1()
 	{
-		if (mTokens.size() < 2) return false;
-
 		int idx = mTokens.size() - 1;
+		if (mTokens[idx].type != jsonToken::Bracket1) return false;
 
+
+
+		if (mTokens.size() < 2) return false;
 		//  [ ]
 		//
-		if (mTokens[idx].type == jsonToken::Bracket1 &&
-			mTokens[idx - 1].type == jsonToken::Bracket0)
+		if ( // mTokens[idx].type == jsonToken::Bracket1 &&
+			 mTokens[idx - 1].type == jsonToken::Bracket0)
 		{
 			mTokens[idx - 1].type = jsonToken::Array;
 
-			mTokens.pop_back();
+			mTokens.pop_back();  // jsonToken::Bracket1 날림
 			return true;
 		}
 
 		if (mTokens.size() < 3) return false;
-
 		//  [ 값 ]
-		//
-		if (mTokens[idx].type == jsonToken::Bracket1 &&
-			mTokens[idx - 1].type < jsonToken::isValue &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-
-			mTokens[idx - 2].type = jsonToken::Array;
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-			return true;
-		}
-
-		//  [ 배열 ]
-		//
-		if (mTokens[idx].type == jsonToken::Bracket1 &&
-			mTokens[idx - 1].type == jsonToken::Array &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-
-			mTokens[idx - 2].type = jsonToken::Array;
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
-			return true;
-		}
-
+		//  [ Array ]
 		//  [ Object ]
 		//
-		if (mTokens[idx].type == jsonToken::Bracket1 &&
-			mTokens[idx - 1].type == jsonToken::Object &&
-			mTokens[idx - 2].type == jsonToken::Bracket0)
-		{
-			jsonValue val;
-			val.setValue(mTokens[idx - 1]);
-
+		if ( // mTokens[idx].type == jsonToken::Bracket1 &&
+			Bracket0_Value()) {
+			// Bracket0 을 Array로 바꿔준다.
 			mTokens[idx - 2].type = jsonToken::Array;
-			mTokens[idx - 2].val_array->mValueList.push_back(val);
-
-			mTokens.pop_back();
-			mTokens.pop_back();
 			return true;
 		}
 
 		return false;
 	}
 
-	bool JsonFile::processExpr_Brace1()
+	bool JsonFile::process_Brace1()
 	{
-		if (mTokens.size() < 2) return false;
-
 		int idx = mTokens.size() - 1;
+		if (mTokens[idx].type != jsonToken::Brace1) return false;
 
-		if (mTokens[idx].type == jsonToken::Brace1 &&
+
+		if (mTokens.size() < 2) return false;
+		// 빈거.
+		// { }
+		//
+		if (// mTokens[idx].type == jsonToken::Brace1 &&
 			mTokens[idx - 1].type == jsonToken::Brace0)
 		{
 			mTokens[idx - 1].type = jsonToken::Object;
@@ -715,21 +698,13 @@ namespace dw1
 		}
 
 		if (mTokens.size() < 3) return false;
-
-		if (mTokens[idx].type == jsonToken::Brace1 &&
-			mTokens[idx - 1].type == jsonToken::KeyValue &&
-			mTokens[idx - 2].type == jsonToken::Brace0)
-		{
-			jsonKeyValue* kv = mTokens[idx - 1].val_kv;
-			jsonObject* obj = mTokens[idx - 2].val_obj;
-			obj->mKeyValueList.push_back(*kv);
-			delete kv;
-
+		//{ Key:Value }
+		//
+		if ( // mTokens[idx].type == jsonToken::Brace1 && 
+			Brace0_Value()) {
 			mTokens[idx - 2].type = jsonToken::Object;
-
-			mTokens.pop_back();
-			mTokens.pop_back();
 			return true;
+
 		}
 
 		return false;
@@ -750,16 +725,17 @@ namespace dw1
 				return;
 			mTokens.push_back(t0);
 
-			if (processExpr_Brace0()) continue;
-			if (processExpr_Bracket0()) continue;
-			if (processExpr_Comma()) continue;
+			if (process_Brace0()) continue;
+			if (process_Bracket0()) continue;
+			if (process_Comma()) continue;
 
-			int cnt = 0;
-			if (processExpr_Bracket1()) ++cnt;
-			if (processExpr_Brace1()) ++cnt;
+			process_Bracket1();
+			process_Brace1();
 			
-			while (processExpr_KeyValue()) {
+			int cnt = 0;
+			while (process_KeyValue()) {
 				++cnt;
+				break;
 			}
 			// Object 하나만 남아 있으면...
 			if (mTokens.size() == 1 &&

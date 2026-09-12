@@ -122,13 +122,15 @@ namespace dw1
 		int Load(const char* file_name);
 		bool PopToken(jsonToken& t);
 
-		bool processExpr_Brace0();
-		bool processExpr_Bracket0();
-		bool processExpr_KeyValue();
-		bool processExpr_Comma();
-		bool processExpr_Bracket1();
-		bool processExpr_Brace1();
+		bool process_Brace0();
+		bool process_Bracket0();
+		bool process_KeyValue();
+		bool process_Comma();
+		bool process_Bracket1();
+		bool process_Brace1();
 
+		bool Bracket0_Value();
+		bool Brace0_Value();
 	public:
 		JsonFile();
 		~JsonFile();
