@@ -1,2 +1,5 @@
 # dw1_Json
-JSON in c++
+Simple JSON in c++
+
+I created this code for personal use,
+It was made simply.
