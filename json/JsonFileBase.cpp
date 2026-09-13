@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "JsonFileBase.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -309,6 +310,21 @@ namespace dw1
 		return nullptr;
 	}
 
+	jsonKeyValue& jsonObject::at(const char* name)
+	{
+		for (auto& kv : mKeyValueList) {
+			if (strcmp(kv.key, name) == 0)
+				return kv;
+			if (kv.type == jsonToken::Object) {
+				jsonKeyValue* v = kv.value_obj->Find(name);
+				if (v) return *v;
+			}
+		}
+
+		static jsonKeyValue null0;
+		return null0;
+	}
+
 	jsonArray::jsonArray()
 	{
 		++debug_created_count;
@@ -397,6 +413,18 @@ namespace dw1
 		jsonValue::Print1(level);
 	}
 
+	jsonKeyValue& jsonKeyValue::operator[](const char* name) 
+	{ 
+		return value_obj->at(name); 
+	}
+
+	int jsonKeyValue::array_x_y(int x, int y)
+	{
+		return value_array->mValueList[y].value_array->mValueList[x].value_i;
+	}
+
+
+
 	JsonFileBase::JsonFileBase()
 	{ 
 		mRoot = nullptr; 
@@ -422,6 +450,8 @@ namespace dw1
 		fseek(f, 0, SEEK_SET);
 		mFileData = (char*)::malloc(file_size + 2);
 		fread(mFileData, 1, file_size, f);
+		fclose(f);
+
 		mFileData[file_size] = '\0';
 		mFileData[file_size + 1] = '\0';
 		mFileSize = (int)file_size;

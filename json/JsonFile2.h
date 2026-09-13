@@ -20,6 +20,12 @@ namespace dw1
 	public:
 
 		bool Parse(const char* file_name);
+
+		jsonKeyValue& operator[](const char* name)
+		{
+			return mRoot->at(name);
+		}
+
 	};
 
 

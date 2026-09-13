@@ -80,19 +80,28 @@ namespace dw1
 		jsonValue() { data = nullptr; }
 		bool setValue(const jsonToken& t0);
 		void Print1(int level);
+
 	};
 
-	class jsonKeyValue : public jsonValue
+	struct jsonKeyValue : public jsonValue
 	{
-	public:
 		char* key;
 
 		static int debug_created_count;
 
-		jsonKeyValue() { ++debug_created_count; }
+		jsonKeyValue() :key(nullptr) { ++debug_created_count; }
 		~jsonKeyValue() { --debug_created_count; }
 		void setKey(const jsonToken& t0);
 		void Print(int level);
+
+		operator bool() const noexcept(false) { return value_b; }
+		operator int() const noexcept(false) { return value_i; }
+		operator float() const noexcept(false) { return value_f; }
+		operator char* () const noexcept(false) { return value_string; }
+		operator jsonArray& () const noexcept(false) { return *value_array; }
+		operator jsonObject& () const noexcept(false) { return *value_obj; }
+		jsonKeyValue& operator[](const char* name);
+		int array_x_y(int x, int y);
 	};
 	
 	struct jsonObject : public jsonBaseObj
@@ -105,6 +114,7 @@ namespace dw1
 		~jsonObject();
 		void Print(int level);
 		jsonKeyValue* Find(const char* name);
+		jsonKeyValue& at(const char* name);
 	};
 
 	struct jsonArray : public jsonBaseObj
@@ -130,8 +140,8 @@ namespace dw1
 
 		std::deque<jsonToken> mTokens;
 
-		int Load(const char* file_name);
 		bool PopToken(jsonToken& t);
+		int Load(const char* file_name);
 
 	public:
 		JsonFileBase();
@@ -139,6 +149,7 @@ namespace dw1
 
 		void Print() { mRoot->Print(1); }
 		jsonKeyValue* Find(const char* name) { return mRoot->Find(name); }
+
 	};
 
 
