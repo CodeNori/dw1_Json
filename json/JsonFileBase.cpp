@@ -6,6 +6,9 @@
 
 namespace dw1
 {
+	int jsonObject::debug_created_count = 0;
+	int jsonArray::debug_created_count = 0;
+	int jsonKeyValue::debug_created_count = 0;
 
 	int token_copy_int(char* src, int cnt)
 	{
@@ -263,12 +266,19 @@ namespace dw1
 		}
 	}
 
+
+	jsonObject::jsonObject()
+	{
+		++debug_created_count;
+	}
+
 	jsonObject::~jsonObject()
 	{
 		for (auto& kv : mKeyValueList) {
 			if (kv.type == jsonToken::Object) delete kv.value_obj;
 			if (kv.type == jsonToken::Array) delete kv.value_array;
 		}
+		--debug_created_count;
 	}
 
 	void jsonObject::Print(int level)
@@ -299,12 +309,19 @@ namespace dw1
 		return nullptr;
 	}
 
+	jsonArray::jsonArray()
+	{
+		++debug_created_count;
+	}
+
+
 	jsonArray::~jsonArray()
 	{
 		for (auto& kv : mValueList) {
 			if (kv.type == jsonToken::Object) delete kv.value_obj;
 			if (kv.type == jsonToken::Array) delete kv.value_array;
-		}	
+		}
+		--debug_created_count;
 	}
 
 	void jsonArray::Print(int level)
@@ -321,7 +338,6 @@ namespace dw1
 		printf("]");
 
 	}
-
 
 	bool jsonValue::setValue(const jsonToken& t0)
 	{
@@ -424,8 +440,6 @@ namespace dw1
 
 		return false;
 	}
-
-
 
 
 

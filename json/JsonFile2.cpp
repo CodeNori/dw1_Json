@@ -170,11 +170,11 @@ namespace dw1
 		kv.setKey(T2);
 		kv.setValue(T0);
 
+		mTokens[idx-3].val_obj->mKeyValueList.push_back(kv);
 		mTokens.pop_back();
 		mTokens.pop_back();
 		mTokens.pop_back();
 
-		mTokens.back().val_obj->mKeyValueList.push_back(kv);
 	}
 
 

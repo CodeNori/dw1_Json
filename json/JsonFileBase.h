@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include <string>
 #include <deque>
 
@@ -38,9 +37,6 @@ namespace dw1
 
 		union
 		{
-			// int val_int;
-			// float val_float;
-			// bool val_bool;
 			struct jsonArray* val_array;
 			struct jsonObject* val_obj;
 			struct jsonKeyValue* val_kv;
@@ -66,6 +62,7 @@ namespace dw1
 	{
 		jsonToken::Type type;
 
+		jsonBaseObj() :type(jsonToken::Null) {}
 		virtual ~jsonBaseObj() { }
 	};
 
@@ -80,23 +77,31 @@ namespace dw1
 			struct jsonObject* value_obj;
 			void* data;
 		};
-
+		jsonValue() { data = nullptr; }
 		bool setValue(const jsonToken& t0);
 		void Print1(int level);
 	};
 
-	struct jsonKeyValue : public jsonValue
+	class jsonKeyValue : public jsonValue
 	{
+	public:
 		char* key;
 
+		static int debug_created_count;
+
+		jsonKeyValue() { ++debug_created_count; }
+		~jsonKeyValue() { --debug_created_count; }
 		void setKey(const jsonToken& t0);
 		void Print(int level);
 	};
 	
 	struct jsonObject : public jsonBaseObj
 	{
-		std::vector< jsonKeyValue> mKeyValueList;
+		std::deque< jsonKeyValue> mKeyValueList;
 
+		static int debug_created_count;
+
+		jsonObject();
 		~jsonObject();
 		void Print(int level);
 		jsonKeyValue* Find(const char* name);
@@ -104,8 +109,11 @@ namespace dw1
 
 	struct jsonArray : public jsonBaseObj
 	{
-		std::vector<jsonValue> mValueList;
+		std::deque<jsonValue> mValueList;
 
+		static int debug_created_count;
+
+		jsonArray();
 		~jsonArray();
 		void Print(int level);
 	};
