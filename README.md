@@ -13,6 +13,7 @@ It was made simply.
     g_Dx11.width = int(dxWin["screenWidth"]);
     g_Dx11.height = int(dxWin["screenHeight"]);
     g_Dx11.titleBarText = (char*)(dxWin["title"]);
+```
 
 (2) example2
 ```cpp
@@ -20,7 +21,7 @@ It was made simply.
     g_Dx11.width = int(jsonfile["DxWindow"]["screenWidth"]);
     g_Dx11.height = int(jsonfile["DxWindow"]["screenHeight"]);
     g_Dx11.titleBarText = (char*)(jsonfile["DxWindow"]["title"]);
-
+```
 
   (3) example3
   ```cpp
@@ -40,7 +41,7 @@ It was made simply.
       ...
 		}
 	}
-
+```
 
   --- json file
   ```json
@@ -68,6 +69,7 @@ It was made simply.
 		 [0,0,0,10,1,0,0,0,0,0,1,3,0,4,0,0],
 		 [0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]
 	  ] 
-} 
+}
+```
 
   
