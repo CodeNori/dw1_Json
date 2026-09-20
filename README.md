@@ -17,7 +17,7 @@ It was made simply.
 
 (2) example2
 ```cpp
-    dw1::JsonFile2 jsonfile;    
+    dw1::JsonFile2 jsonfile("Content\\Game.json");    
     g_Dx11.width = int(jsonfile["DxWindow"]["screenWidth"]);
     g_Dx11.height = int(jsonfile["DxWindow"]["screenHeight"]);
     g_Dx11.titleBarText = (char*)(jsonfile["DxWindow"]["title"]);
