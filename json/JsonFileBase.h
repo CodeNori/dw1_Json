@@ -144,7 +144,6 @@ namespace dw1
 		int Load(const char* file_name);
 
 	public:
-		JsonFileBase();
 		~JsonFileBase();
 
 		void Print() { mRoot->Print(1); }

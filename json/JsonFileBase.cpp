@@ -425,12 +425,6 @@ namespace dw1
 
 
 
-	JsonFileBase::JsonFileBase()
-	{ 
-		mRoot = nullptr; 
-		mFileData = nullptr;
-	}
-
 	JsonFileBase::~JsonFileBase()
 	{
 		if (mRoot) delete mRoot;

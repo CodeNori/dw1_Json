@@ -18,7 +18,8 @@ namespace dw1
 		void make_KeyValue();
 
 	public:
-
+		JsonFile2() {}
+		JsonFile2(const char* file_name) { Parse(file_name); }
 		bool Parse(const char* file_name);
 
 		jsonKeyValue& operator[](const char* name)
