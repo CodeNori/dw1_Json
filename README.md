@@ -13,6 +13,7 @@ It was made simply.
     g_Dx11.titleBarText = (char*)(dxWin["title"]);
 
 (2)
+
     dw1::JsonFile2 jsonfile;    
     g_Dx11.width = int(jsonfile["DxWindow"]["screenWidth"]);
     g_Dx11.height = int(jsonfile["DxWindow"]["screenHeight"]);
