@@ -46,6 +46,11 @@ It was made simply.
   --- json file
   ```json
   {
+	"DxWindow": {
+		"screenWidth": 1280,
+		"screenHeight": 720,
+		"title": "KDW-2D"
+	},
 	"x" : 16, 
 	"y" : 16, 
 	"base_x" : 16, 
