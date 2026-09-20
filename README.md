@@ -1,8 +1,16 @@
 # dw1_Json
-Simple JSON in c++ for Reading
+Simple JSON libs in c++ for Reading
 
 I created this code for personal use,
 It was made simply.
+
+## Files
+  - JsonFile2.cpp
+  - JsonFile2.h
+  - JsonFileBase.cpp
+  - JsonFileBase.h
+
+## usage
 
 (1) example1)
 ```cpp
