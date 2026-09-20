@@ -5,7 +5,7 @@ I created this code for personal use,
 It was made simply.
 
 (1) example1)
-
+```cpp
     dw1::JsonFile2 jsonfile;
     jsonfile.Parse("Content\\Game.json");
     
@@ -15,7 +15,7 @@ It was made simply.
     g_Dx11.titleBarText = (char*)(dxWin["title"]);
 
 (2) example2
-
+```cpp
     dw1::JsonFile2 jsonfile;    
     g_Dx11.width = int(jsonfile["DxWindow"]["screenWidth"]);
     g_Dx11.height = int(jsonfile["DxWindow"]["screenHeight"]);
@@ -23,7 +23,7 @@ It was made simply.
 
 
   (3) example3
-  
+  ```cpp
   	dw1::JsonFile2 jfile;
 	jfile.Parse(fileName);
 
@@ -41,8 +41,9 @@ It was made simply.
 		}
 	}
 
+
   --- json file
-  
+  ```json
   {
 	"x" : 16, 
 	"y" : 16, 
