@@ -3,7 +3,9 @@ Simple JSON in c++
 
 I created this code for personal use,
 It was made simply.
-(1)
+
+(1) example1)
+
     dw1::JsonFile2 jsonfile;
     jsonfile.Parse("Content\\Game.json");
     
@@ -12,7 +14,7 @@ It was made simply.
     g_Dx11.height = int(dxWin["screenHeight"]);
     g_Dx11.titleBarText = (char*)(dxWin["title"]);
 
-(2)
+(2) example2
 
     dw1::JsonFile2 jsonfile;    
     g_Dx11.width = int(jsonfile["DxWindow"]["screenWidth"]);
@@ -20,7 +22,8 @@ It was made simply.
     g_Dx11.titleBarText = (char*)(jsonfile["DxWindow"]["title"]);
 
 
-  (3)
+  (3) example3
+  
   	dw1::JsonFile2 jfile;
 	jfile.Parse(fileName);
 
@@ -39,6 +42,7 @@ It was made simply.
 	}
 
   --- json file
+  
   {
 	"x" : 16, 
 	"y" : 16, 
