@@ -5,6 +5,7 @@
 	"age": 308,
 	"age1": -1e-3,
 	"height_cm": 167.6,
+	"test": {},
 	"address": {
 		"streetAddress": "21 2nd Street",
 		"city": "New York",
@@ -17,8 +18,8 @@
 			"number": "212 555-1234"
 		},
 		{
-			"type": "office",
-			"number": "646 555-4567"
+			"type1": "office",
+			"number1": "646 555-4567"
 		}
 	],
 	"children": [],
