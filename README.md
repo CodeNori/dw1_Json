@@ -1,16 +1,16 @@
-# dw1_Json
+# 1. dw1_Json
 Simple JSON libs in c++ for Reading
 
 I created this code for personal use,
 It was made simply.
 
-## Files
+### Files
   - JsonFile2.cpp
   - JsonFile2.h
   - JsonFileBase.cpp
   - JsonFileBase.h
 
-## usage
+### usage
 
 (1) example1)
 ```cpp
@@ -85,18 +85,19 @@ It was made simply.
 }
 ```
 
-# 2nd JSON lib
-# dwJSONlib
-2nd JSON libs
 
-## Solution File
+# 2. dwJSONlib
+2nd JSON libs
+Lex and Yacc was used.
+
+### Solution File
 	JSON_test2.sln
 	
-## Files
+### Files
   - #include "dwJSONlib/json_type.h"
   - Add dwJSONlib.lib
 
-## usage
+### usage
 
 (1) example1)
 ```cpp
