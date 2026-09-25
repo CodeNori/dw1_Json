@@ -12,7 +12,8 @@
 
 (1) example1)
 ```cpp
-        JsonFile json;
+	
+	JsonFile json;
     CreateJSON(&json, "tilemap_0_0.json");
 
     json.Print(stdout);
@@ -20,7 +21,7 @@
     const char* cc = (const char*) json["address"]["state"];
     printf("\n");
     printf("address: %s \n", cc);
-    // printf("address: %s \n", (const char*)(json["city"]));
+    // printf("address: %s \n", (const char*)json["city"] );
 
     Array_t* arr = (Array_t *)json["tiles"];
 
