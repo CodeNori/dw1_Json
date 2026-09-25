@@ -94,7 +94,7 @@ It was made simply.
 	
 ## Files
   - #include "dwJSONlib/json_type.h"
-  - dwJSONlib  추가.
+  - Add dwJSONlib.lib
 
 ## usage
 
